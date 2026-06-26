@@ -1,0 +1,70 @@
+local UILib = loadstring(game:HttpGet('https://raw.githubusercontent.com/huyzola1/hihi-Ui-librabry/main/source.lua'))()
+
+local Window = UILib:CreateWindow({
+			Name = "HiHi Lib",
+			SubTitle = "by HuyHIHI",
+			Keybind = Enum.KeyCode.RightControl
+		})
+
+		local TabMain = Window:CreateTab("Main")
+		local Tab1 = Window:CreateTab("Combat")
+		local Tab2 = Window:CreateTab("Misc")
+
+		TabMain:CreateLabel("HIHIHUB")
+
+		TabMain:CreateButton({
+			Name = "Print Message",
+			Callback = function()
+				print("Button clicked!")
+			end
+		})
+
+		TabMain:CreateToggle({
+			Name = "Auto Farm",
+			CurrentValue = false,
+			Callback = function(state)
+				print("Auto Farm state:", state)
+			end
+		})
+
+		TabMain:CreateSlider({
+			Name = "Walk Speed",
+			Range = {16, 100},
+			Increment = 1,
+			CurrentValue = 16,
+			Callback = function(value)
+				print("Speed set to:", value)
+			end
+		})
+
+		local TabSettings = Window:CreateTab("Settings")
+
+		TabSettings:CreateDropdown({
+			Name = "Select Weapon",
+			Options = {"Sword", "Gun", "Magic"},
+			CurrentOption = "Sword",
+			Callback = function(option)
+				print("Weapon selected:", option)
+			end
+		})
+
+		local TabMisc = Window:CreateTab("Misc")
+
+		TabMisc:CreateColorPicker({
+			Name = "ESP Color",
+			DefaultColor = Color3.fromRGB(45, 212, 191),
+			Callback = function(color)
+				print("Color changed:", color)
+			end
+		})
+
+		TabMisc:CreateButton({
+			Name = "Test Notification",
+			Callback = function()
+				Window:Notify({
+					Title = "Success",
+					Content = "HII",
+					Duration = 4
+				})
+			end
+		})
