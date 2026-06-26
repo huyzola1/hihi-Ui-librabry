@@ -406,7 +406,7 @@ function UILib:CreateWindow(config)
 			local OptionList = Create("Frame", { BackgroundTransparency = 1, Position = UDim2.new(0, 0, 0, 40), Size = UDim2.new(1, 0, 0, #options * 30), Parent = Holder }, { Create("UIListLayout", { Padding = UDim.new(0, 4) }), Create("UIPadding", { PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12) }) })
 			for _, optionName in ipairs(options) do
 				local OptBtn = Create("TextButton", { BackgroundColor3 = Theme.SurfaceLight, Size = UDim2.new(1, 0, 0, 26), Font = Theme.Font, Text = optionName, TextColor3 = Theme.SubText, TextSize = 12, AutoButtonColor = false, Parent = OptionList })
-				OptBtn.MouseButton1Click:Connect(function() current = optionName; SelectedBtn.Text = current"; open = false; Tween(Holder, { Size = UDim2.new(1, 0, 0, 38) }, 0.2, Enum.EasingStyle.Quad); if opts.Callback then task.spawn(opts.Callback, current) end end)
+				OptBtn.MouseButton1Click:Connect(function() current = optionName; SelectedBtn.Text = current; open = false; Tween(Holder, { Size = UDim2.new(1, 0, 0, 38) }, 0.2, Enum.EasingStyle.Quad); if opts.Callback then task.spawn(opts.Callback, current) end end)
 			end
 			SelectedBtn.MouseButton1Click:Connect(function() open = not open; Tween(Holder, { Size = UDim2.new(1, 0, 0, open and (40 + #options * 30 + 8) or 38) }, 0.25, Enum.EasingStyle.Quad) end)
 			return { Set = function(_, v) current = v; SelectedBtn.Text = current end }
