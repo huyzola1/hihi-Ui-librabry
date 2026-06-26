@@ -215,25 +215,25 @@ function UILib:CreateWindow(config)
 	local Window = { ScreenGui = screenGui, Main = Main, Tabs = {}, Connections = {}, _firstTab = nil }
 	ActiveWindow = Window
 
-	local ToggleButton = Create("ImageButton", { Name = "ToggleButton", BackgroundColor3 = Theme.Accent, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(0, 45, 0.5, 0), Size = UDim2.new(0, 0, 0, 0), Visible = false, AutoButtonColor = false, Parent = screenGui }, {Corner(50)})
-	Create("ImageLabel", { BackgroundTransparency = 1, Position = UDim2.new(0.5, -12, 0.5, -12), Size = UDim2.new(0, 24, 0, 24), Image = "rbxassetid://7488932274" , ImageColor3 = Color3.fromRGB(255, 255, 255), Parent = ToggleButton })
+	local ToggleButton = Create("ImageButton", { Name = "ToggleButton",Transparency = 1, BackgroundColor3 = Theme.Accent, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(0, 45, 0.5, 0), Size = UDim2.new(0, 0, 0, 0), Visible = false, AutoButtonColor = false, Parent = screenGui }, {Corner(50)})
+	local Img = Create("ImageLabel", { BackgroundTransparency = 1, AnchorPoint = Vector2.new(.5,.5), Position = UDim2.new(0.5, -12, 0.5, -12), Size = UDim2.new(0, 24, 0, 24), Image = "rbxassetid://7488932274" , ImageColor3 = Color3.fromRGB(255, 255, 255), Parent = ToggleButton} , {Corner(50)})
 	
-	local Shadow = Instance.new("UIShadow",ToggleButton)
+	local Shadow = Instance.new("UIShadow",Img)
 	Shadow.BlurRadius = UDim.new(0,10)
 		
 	MakeDraggable(ToggleButton, ToggleButton)
 	local isDraggingBtn, dragStartPos = false, nil
-	ToggleButton.InputBegan:Connect(function(input)
+	Img.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragStartPos = input.Position; isDraggingBtn = false end
 	end)
 	
-	ToggleButton.InputChanged:Connect(function(input)
+	Img.InputChanged:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
 			if dragStartPos and (input.Position - dragStartPos).Magnitude > 5 then isDraggingBtn = true end
 		end
 	end)
-	ToggleButton.MouseEnter:Connect(function() if ToggleButton.Visible then Tween(ToggleButton, { Size = UDim2.new(0, 56, 0, 56) }, 0.2, Enum.EasingStyle.Back) end end)
-	ToggleButton.MouseLeave:Connect(function() if ToggleButton.Visible then Tween(ToggleButton, { Size = UDim2.new(0, 50, 0, 50) }, 0.2, Enum.EasingStyle.Back) end end)
+	Img.MouseEnter:Connect(function() if Img.Visible then Tween(Img, { Size = UDim2.new(0, 56, 0, 56) }, 0.2, Enum.EasingStyle.Back) end end)
+	Img.MouseLeave:Connect(function() if Img.Visible then Tween(Img, { Size = UDim2.new(0, 24, 0, 24) }, 0.2, Enum.EasingStyle.Back) end end)
 
 	local isAnimating = false
 
@@ -402,7 +402,7 @@ function UILib:CreateWindow(config)
 			local options, current, open = opts.Options or {}, opts.CurrentOption or opts.Options[1] or "—", false
 			local Holder = Create("Frame", { BackgroundColor3 = Theme.Surface, Size = UDim2.new(1, 0, 0, 38), ClipsDescendants = true, Parent = TabPage })
 			Create("TextLabel", { BackgroundTransparency = 1, Position = UDim2.new(0, 12, 0, 0), Size = UDim2.new(1, -120, 0, 38), Font = Theme.Font, Text = opts.Name or "Dropdown", TextColor3 = Theme.Text, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, Parent = Holder })
-			local SelectedBtn = Create("TextButton", { BackgroundColor3 = Theme.SurfaceLight, Position = UDim2.new(1, -110, 0, 6), Size = UDim2.new(0, 98, 0, 26), Font = Theme.Font, Text = current .. "  ▾", TextColor3 = Theme.Text, TextSize = 12, AutoButtonColor = false, Parent = Holder })
+			local SelectedBtn = Create("TextButton", { BackgroundColor3 = Theme.SurfaceLight, Position = UDim2.new(1, -110, 0, 6), Size = UDim2.new(0, 98, 0, 26), Font = Theme.Font, Text = current, TextColor3 = Theme.Text, TextSize = 12, AutoButtonColor = false, Parent = Holder })
 			local OptionList = Create("Frame", { BackgroundTransparency = 1, Position = UDim2.new(0, 0, 0, 40), Size = UDim2.new(1, 0, 0, #options * 30), Parent = Holder }, { Create("UIListLayout", { Padding = UDim.new(0, 4) }), Create("UIPadding", { PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12) }) })
 			for _, optionName in ipairs(options) do
 				local OptBtn = Create("TextButton", { BackgroundColor3 = Theme.SurfaceLight, Size = UDim2.new(1, 0, 0, 26), Font = Theme.Font, Text = optionName, TextColor3 = Theme.SubText, TextSize = 12, AutoButtonColor = false, Parent = OptionList })
