@@ -70,52 +70,16 @@ local function Create(class, props, children)
 end
 
 local function Corner(radius, tl, tr, bl, br)
-	radius = radius or 8
-	tl = tl or radius
-	tr = tr or radius
-	bl = bl or radius
-	br = br or radius
+    local c = Instance.new("UICorner")
 
-	local maxR = math.max(tl, tr, bl, br, 0)
-	local corner = Create("UICorner", { CornerRadius = UDim.new(0, maxR) })
+    radius = radius or 0
 
-	if tl == maxR and tr == maxR and bl == maxR and br == maxR then
-		return corner
-	end
+    c.TopLeftRadius = UDim.new(0, tl or radius)
+    c.TopRightRadius = UDim.new(0, tr or radius)
+    c.BottomLeftRadius = UDim.new(0, bl or radius)
+    c.BottomRightRadius = UDim.new(0, br or radius)
 
-	local patchSpecs = {
-		{ r = tl, anchor = Vector2.new(0, 0), pos = UDim2.new(0, 0, 0, 0) },
-		{ r = tr, anchor = Vector2.new(1, 0), pos = UDim2.new(1, 0, 0, 0) },
-		{ r = bl, anchor = Vector2.new(0, 1), pos = UDim2.new(0, 0, 1, 0) },
-		{ r = br, anchor = Vector2.new(1, 1), pos = UDim2.new(1, 0, 1, 0) },
-	}
-
-	corner.AncestryChanged:Connect(function(_, parent)
-		if not parent or not parent:IsA("GuiObject") then return end
-		for _, spec in ipairs(patchSpecs) do
-			if spec.r < maxR then
-				local patch = Create("Frame", {
-					Name = "CornerPatch",
-					BackgroundColor3 = parent.BackgroundColor3,
-					BackgroundTransparency = parent.BackgroundTransparency,
-					BorderSizePixel = 0,
-					AnchorPoint = spec.anchor,
-					Position = spec.pos,
-					Size = UDim2.new(0, maxR, 0, maxR),
-					ZIndex = 5,
-					Parent = parent,
-				})
-				parent:GetPropertyChangedSignal("BackgroundColor3"):Connect(function()
-					patch.BackgroundColor3 = parent.BackgroundColor3
-				end)
-				parent:GetPropertyChangedSignal("BackgroundTransparency"):Connect(function()
-					patch.BackgroundTransparency = parent.BackgroundTransparency
-				end)
-			end
-		end
-	end)
-
-	return corner
+    return c
 end
 
 
@@ -387,7 +351,7 @@ function UILib:CreateWindow(config)
 		local textOffsetX = TabIcon and 24 or 8
 		local TabText = Create("TextLabel", { BackgroundTransparency = 1, Position = UDim2.new(0, textOffsetX, 0, 0), Size = UDim2.new(1, -(textOffsetX + 10), 1, 0), Font = Theme.Font, Text = tabName, TextColor3 = Theme.SubText, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, TextTruncate = Enum.TextTruncate.AtEnd, Parent = TabButton })
 
-		local TabPage = Create("ScrollingFrame", { Name = tabName .. "Page", BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), CanvasSize = UDim2.new(0, 0, 0, 0), AutomaticCanvasSize = Enum.AutomaticSize.Y, ScrollBarThickness = 4, ScrollBarImageColor3 = Theme.Accent, Visible = false, Parent = Container, ScrollBarThickness = 2 }, {
+		local TabPage = Create("ScrollingFrame", { Name = tabName .. "Page", BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), CanvasSize = UDim2.new(0, 0, 0, 0), AutomaticCanvasSize = Enum.AutomaticSize.Y, ScrollBarThickness = 2, ScrollBarImageColor3 = Theme.Accent, Visible = false, Parent = Container}, {
 			Create("UIListLayout", { Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder }),
 			Create("UIPadding", { PaddingTop = UDim.new(0, 12), PaddingLeft = UDim.new(0, 14), PaddingRight = UDim.new(0, 14), PaddingBottom = UDim.new(0, 12) }),
 		})
