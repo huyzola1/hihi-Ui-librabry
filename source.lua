@@ -543,7 +543,7 @@ function UILib:CreateWindow(config)
 			BackgroundTransparency = 1,
 			ClipsDescendants = true,
 			Parent = notifHolder,
-            Corner(20)
+            {Corner(20)}
 		})
 
 		local Scale = Create("UIScale", { Scale = 0.7, Parent = Notif })
