@@ -235,8 +235,46 @@ function UILib:CreateWindow(config)
 
 	local titleOffsetX, WindowIcon = AddIcon(TopBar, config.Icon, 16, Theme.Text, 22)
 
-	Create("TextLabel", { Name = "Title", BackgroundTransparency = 1, Position = UDim2.new(0, titleOffsetX, 0, 6), Size = UDim2.new(1, -100 - titleOffsetX, 0, 22), Font = Theme.FontBold, Text = windowName, TextColor3 = Theme.Text, TextSize = 17, TextXAlignment = Enum.TextXAlignment.Left, Parent = TopBar })
-	Create("TextLabel", { Name = "SubTitle", BackgroundTransparency = 1, Position = UDim2.new(0, titleOffsetX, 0, 26), Size = UDim2.new(1, -100 - titleOffsetX, 0, 16), Font = Theme.Font, Text = subTitle, TextColor3 = Theme.SubText, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left, Parent = TopBar })
+	-- Create("TextLabel", { Name = "Title", BackgroundTransparency = 1, Position = UDim2.new(0, titleOffsetX, 0, 6), Size = UDim2.new(1, -100 - titleOffsetX, 0, 22), Font = Theme.FontBold, Text = windowName, TextColor3 = Theme.Text, TextSize = 17, TextXAlignment = Enum.TextXAlignment.Left, Parent = TopBar })
+	-- Create("TextLabel", { Name = "SubTitle", BackgroundTransparency = 1, Position = UDim2.new(0, titleOffsetX, 0, 26), Size = UDim2.new(1, -100 - titleOffsetX, 0, 16), Font = Theme.Font, Text = subTitle, TextColor3 = Theme.SubText, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left, Parent = TopBar })
+
+    local ContentHolder = Create("Frame",{
+	BackgroundTransparency = 1,
+	Position = UDim2.new(0,16,0,8),
+	Size = UDim2.new(1,-28,0,0),
+	AutomaticSize = Enum.AutomaticSize.Y,
+	Parent = Notif
+},{
+	Create("UIListLayout",{
+		Padding = UDim.new(0,4),
+		SortOrder = Enum.SortOrder.LayoutOrder
+	})
+})
+
+Create("TextLabel",{
+	BackgroundTransparency = 1,
+	Size = UDim2.new(1,0,0,18),
+	Font = Theme.FontBold,
+	Text = opts.Title or "Notification",
+	TextColor3 = Theme.Text,
+	TextSize = 14,
+	TextXAlignment = Enum.TextXAlignment.Left,
+	Parent = ContentHolder
+})
+
+Create("TextLabel",{
+	BackgroundTransparency = 1,
+	Size = UDim2.new(1,0,0,0),
+	AutomaticSize = Enum.AutomaticSize.Y,
+	Font = Theme.Font,
+	Text = opts.Content or "",
+	TextColor3 = Theme.SubText,
+	TextSize = 12,
+	TextWrapped = true,
+	TextXAlignment = Enum.TextXAlignment.Left,
+	Parent = ContentHolder
+})
+
 
 	local CloseBtn = Create("TextButton", { Name = "CloseBtn", BackgroundColor3 = Theme.SurfaceLight, Position = UDim2.new(1, -40, 0, 10), Size = UDim2.new(0, 28, 0, 28), Font = Theme.FontBold, Text = "×", TextColor3 = Theme.Text, TextSize = 18, AutoButtonColor = false, Parent = TopBar }, { Corner(8) })
 	local MinimizeBtn = Create("TextButton", { Name = "MinimizeBtn", BackgroundColor3 = Theme.SurfaceLight, Position = UDim2.new(1, -74, 0, 10), Size = UDim2.new(0, 28, 0, 28), Font = Theme.FontBold, Text = "—", TextColor3 = Theme.Text, TextSize = 14, AutoButtonColor = false, Parent = TopBar }, { Corner(8) })
@@ -552,7 +590,22 @@ function UILib:CreateWindow(config)
 		Create("TextLabel", { BackgroundTransparency = 1, Position = UDim2.new(0, titleOffsetX, 0, 8), Size = UDim2.new(1, -titleOffsetX - 12, 0, 18), Font = Theme.FontBold, Text = opts.Title or "Notification", TextColor3 = Theme.Text, TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, Parent = Notif })
 		Create("TextLabel", { BackgroundTransparency = 1, Position = UDim2.new(0, 16, 0, 28), Size = UDim2.new(1, -28, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, Font = Theme.Font, Text = opts.Content or "", TextColor3 = Theme.SubText, TextSize = 12, TextWrapped = true, TextXAlignment = Enum.TextXAlignment.Left, Parent = Notif })
 
-		local ProgressTrack = Create("Frame", { BackgroundColor3 = Theme.SurfaceLight, Position = UDim2.new(0, 16, 1, -6), Size = UDim2.new(1, -32, 0, 3), Parent = Notif }, { Corner(2) })
+		-- local ProgressTrack = Create("Frame", { BackgroundColor3 = Theme.SurfaceLight, Position = UDim2.new(0, 16, 1, -6), Size = UDim2.new(1, -32, 0, 3), Parent = Notif }, { Corner(2) })
+
+                local ProgressTrack = Create("Frame",{
+                    BackgroundColor3 = Theme.SurfaceLight,
+                    Position = UDim2.new(0,16,1,-10),
+                    Size = UDim2.new(1,-32,0,4),
+                    Parent = Notif
+                },{
+                    Corner(2)
+                })
+            
+
+                Create("UIPadding",{
+                    PaddingBottom = UDim.new(0,18)
+                }).Parent = Notif
+                
 		local ProgressFill = Create("Frame", { BackgroundColor3 = typeColor, Size = UDim2.new(1, 0, 1, 0), Parent = ProgressTrack }, { Corner(2) })
 
 		Create("UIPadding", { PaddingBottom = UDim.new(0, 16) }).Parent = Notif
