@@ -142,7 +142,7 @@ end
 local function CreateNotificationHolder(screenGui)
 	return Create("Frame", {
 		Name = "NotificationHolder", BackgroundTransparency = 1, AnchorPoint = Vector2.new(1, 1),
-		Position = UDim2.new(1, -16, 1, -16), Size = UDim2.new(0, 300, 1, -32), Parent = screenGui,
+		Position = UDim2.new(1, -16, 3, -16), Size = UDim2.new(0, 300, 1, -32), Parent = screenGui,
 	}, { Create("UIListLayout", { HorizontalAlignment = Enum.HorizontalAlignment.Right, VerticalAlignment = Enum.VerticalAlignment.Bottom, Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder }) })
 end
 
