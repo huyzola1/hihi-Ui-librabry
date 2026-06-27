@@ -387,7 +387,7 @@ function UILib:CreateWindow(config)
 		local textOffsetX = TabIcon and 24 or 8
 		local TabText = Create("TextLabel", { BackgroundTransparency = 1, Position = UDim2.new(0, textOffsetX, 0, 0), Size = UDim2.new(1, -(textOffsetX + 10), 1, 0), Font = Theme.Font, Text = tabName, TextColor3 = Theme.SubText, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, TextTruncate = Enum.TextTruncate.AtEnd, Parent = TabButton })
 
-		local TabPage = Create("ScrollingFrame", { Name = tabName .. "Page", BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), CanvasSize = UDim2.new(0, 0, 0, 0), AutomaticCanvasSize = Enum.AutomaticSize.Y, ScrollBarThickness = 4, ScrollBarImageColor3 = Theme.Accent, Visible = false, Parent = Container }, {
+		local TabPage = Create("ScrollingFrame", { Name = tabName .. "Page", BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), CanvasSize = UDim2.new(0, 0, 0, 0), AutomaticCanvasSize = Enum.AutomaticSize.Y, ScrollBarThickness = 4, ScrollBarImageColor3 = Theme.Accent, Visible = false, Parent = Container, ScrollBarThickness = 2 }, {
 			Create("UIListLayout", { Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder }),
 			Create("UIPadding", { PaddingTop = UDim.new(0, 12), PaddingLeft = UDim.new(0, 14), PaddingRight = UDim.new(0, 14), PaddingBottom = UDim.new(0, 12) }),
 		})
