@@ -523,7 +523,57 @@ function UILib:CreateWindow(config)
 		return Tab
 	end
 
-	function Window:Notify(opts)
+	-- function Window:Notify(opts)
+	-- 	opts = opts or {}
+	-- 	local duration = opts.Duration or 4
+	-- 	local notifType = opts.Type or "Info"
+	-- 	local typeColor = ({
+	-- 		Success = Theme.Success,
+	-- 		Error = Theme.Error,
+	-- 		Warning = Theme.Warning,
+	-- 		Info = Theme.Accent,
+	-- 	})[notifType] or Theme.Accent
+
+	-- 	local Notif = Create("Frame", {
+	-- 		BackgroundColor3 = Theme.Surface,
+	-- 		Size = UDim2.new(1, 0, 0, 0),
+	-- 		AutomaticSize = Enum.AutomaticSize.Y,
+	-- 		Position = UDim2.new(1, 340, 0, 0),
+	-- 		BackgroundTransparency = 1,
+	-- 		ClipsDescendants = true,
+	-- 		Parent = notifHolder,
+	-- 	}, { Corner(10) })
+
+	-- 	local Scale = Create("UIScale", { Scale = 0.7, Parent = Notif })
+
+	-- 	Create("Frame", { BackgroundColor3 = typeColor, Size = UDim2.new(0, 4, 1, -8), Position = UDim2.new(0, 0, 0, 4), Parent = Notif }, { Corner(4) })
+
+	-- 	local titleOffsetX, _ = AddIcon(Notif, opts.Icon, 16, typeColor)
+	-- 	Create("TextLabel", { BackgroundTransparency = 1, Position = UDim2.new(0, titleOffsetX, 0, 8), Size = UDim2.new(1, -titleOffsetX - 12, 0, 18), Font = Theme.FontBold, Text = opts.Title or "Notification", TextColor3 = Theme.Text, TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, Parent = Notif })
+	-- 	Create("TextLabel", { BackgroundTransparency = 1, Position = UDim2.new(0, 16, 0, 28), Size = UDim2.new(1, -28, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, Font = Theme.Font, Text = opts.Content or "", TextColor3 = Theme.SubText, TextSize = 12, TextWrapped = true, TextXAlignment = Enum.TextXAlignment.Left, Parent = Notif })
+
+	-- 	local ProgressTrack = Create("Frame", { BackgroundColor3 = Theme.SurfaceLight, Position = UDim2.new(0, 16, 1, -10), Size = UDim2.new(1, -32, 0, 3), Parent = Notif }, { Corner(2) })
+	-- 	local ProgressFill = Create("Frame", { BackgroundColor3 = typeColor, Size = UDim2.new(1, 0, 1, 0), Parent = ProgressTrack }, { Corner(2) })
+
+	-- 	Create("UIPadding", { PaddingBottom = UDim.new(0, 16) }).Parent = Notif
+
+	-- 	Tween(Notif, { Position = UDim2.new(0, 0, 0, 0), BackgroundTransparency = 0 }, 0.4, Enum.EasingStyle.Back)
+	-- 	Tween(Scale, { Scale = 1 }, 0.35, Enum.EasingStyle.Back)
+
+	-- 	task.delay(0.1, function()
+	-- 		Tween(ProgressFill, { Size = UDim2.new(0, 0, 1, 0) }, duration, Enum.EasingStyle.Linear)
+	-- 	end)
+
+	-- 	task.delay(duration, function()
+	-- 		if Notif and Notif.Parent then
+	-- 			Tween(Scale, { Scale = 0.7 }, 0.3, Enum.EasingStyle.Quad)
+	-- 			Tween(Notif, { Position = UDim2.new(1, 340, 0, 0), BackgroundTransparency = 1 }, 0.3, Enum.EasingStyle.Quad)
+	-- 			task.delay(0.3, function() Notif:Destroy() end)
+	-- 		end
+	-- 	end)
+	-- end
+
+    function Window:Notify(opts)
 		opts = opts or {}
 		local duration = opts.Duration or 4
 		local notifType = opts.Type or "Info"
@@ -542,21 +592,18 @@ function UILib:CreateWindow(config)
 			BackgroundTransparency = 1,
 			ClipsDescendants = true,
 			Parent = notifHolder,
-		}, { Corner(10) })
+		})
 
 		local Scale = Create("UIScale", { Scale = 0.7, Parent = Notif })
 
-		Create("Frame", { BackgroundColor3 = typeColor, Size = UDim2.new(0, 4, 1, -8), Position = UDim2.new(0, 0, 0, 4), Parent = Notif }, { Corner(4) })
+		Create("Frame", { BackgroundColor3 = typeColor, Size = UDim2.new(0, 4, 1, -8), Position = UDim2.new(0, 0, 0, 4), Parent = Notif })
 
-		local titleOffsetX, _ = AddIcon(Notif, opts.Icon, 16, typeColor)
-		Create("TextLabel", { BackgroundTransparency = 1, Position = UDim2.new(0, titleOffsetX, 0, 8), Size = UDim2.new(1, -titleOffsetX - 12, 0, 18), Font = Theme.FontBold, Text = opts.Title or "Notification", TextColor3 = Theme.Text, TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, Parent = Notif })
+		Create("TextLabel", { BackgroundTransparency = 1, Position = UDim2.new(0, 16, 0, 8), Size = UDim2.new(1, -28, 0, 18), Font = Theme.FontBold, Text = opts.Title or "Notification", TextColor3 = Theme.Text, TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, Parent = Notif })
 		Create("TextLabel", { BackgroundTransparency = 1, Position = UDim2.new(0, 16, 0, 28), Size = UDim2.new(1, -28, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, Font = Theme.Font, Text = opts.Content or "", TextColor3 = Theme.SubText, TextSize = 12, TextWrapped = true, TextXAlignment = Enum.TextXAlignment.Left, Parent = Notif })
 
-		-- local ProgressTrack = Create("Frame", { BackgroundColor3 = Theme.SurfaceLight, Position = UDim2.new(0, 16, 1, -10), Size = UDim2.new(1, -32, 0, 3), Parent = Notif }, { Corner(2) })
-		-- local ProgressFill = Create("Frame", { BackgroundColor3 = typeColor, Size = UDim2.new(1, 0, 1, 0), Parent = ProgressTrack }, { Corner(2) })
 
-            local ProgressTrack = Create("Frame", { BackgroundColor3 = Theme.SurfaceLight, Position = UDim2.new(0, 16, 2, -6), Size = UDim2.new(1, -32, 0, 3), Parent = Notif })
-            local ProgressFill = Create("Frame", { BackgroundColor3 = typeColor, Size = UDim2.new(1, 0,2, 0), Parent = ProgressTrack })
+		local ProgressTrack = Create("Frame", { BackgroundColor3 = Theme.SurfaceLight, Position = UDim2.new(0, 16, 2, -6), Size = UDim2.new(1, -32, 0, 3), Parent = Notif })
+		local ProgressFill = Create("Frame", { BackgroundColor3 = typeColor, Size = UDim2.new(1, 0,2, 0), Parent = ProgressTrack })
 
 		Create("UIPadding", { PaddingBottom = UDim.new(0, 16) }).Parent = Notif
 
@@ -564,7 +611,7 @@ function UILib:CreateWindow(config)
 		Tween(Scale, { Scale = 1 }, 0.35, Enum.EasingStyle.Back)
 
 		task.delay(0.1, function()
-			Tween(ProgressFill, { Size = UDim2.new(0, 0, 1, 0) }, duration, Enum.EasingStyle.Linear)
+			Tween(ProgressFill, { Size = UDim2.new(0, 0, 2, 0) }, duration, Enum.EasingStyle.Linear)
 		end)
 
 		task.delay(duration, function()
