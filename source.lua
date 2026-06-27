@@ -552,8 +552,11 @@ function UILib:CreateWindow(config)
 		Create("TextLabel", { BackgroundTransparency = 1, Position = UDim2.new(0, titleOffsetX, 0, 8), Size = UDim2.new(1, -titleOffsetX - 12, 0, 18), Font = Theme.FontBold, Text = opts.Title or "Notification", TextColor3 = Theme.Text, TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, Parent = Notif })
 		Create("TextLabel", { BackgroundTransparency = 1, Position = UDim2.new(0, 16, 0, 28), Size = UDim2.new(1, -28, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, Font = Theme.Font, Text = opts.Content or "", TextColor3 = Theme.SubText, TextSize = 12, TextWrapped = true, TextXAlignment = Enum.TextXAlignment.Left, Parent = Notif })
 
-		local ProgressTrack = Create("Frame", { BackgroundColor3 = Theme.SurfaceLight, Position = UDim2.new(0, 16, 1, -10), Size = UDim2.new(1, -32, 0, 3), Parent = Notif }, { Corner(2) })
-		local ProgressFill = Create("Frame", { BackgroundColor3 = typeColor, Size = UDim2.new(1, 0, 1, 0), Parent = ProgressTrack }, { Corner(2) })
+		-- local ProgressTrack = Create("Frame", { BackgroundColor3 = Theme.SurfaceLight, Position = UDim2.new(0, 16, 1, -10), Size = UDim2.new(1, -32, 0, 3), Parent = Notif }, { Corner(2) })
+		-- local ProgressFill = Create("Frame", { BackgroundColor3 = typeColor, Size = UDim2.new(1, 0, 1, 0), Parent = ProgressTrack }, { Corner(2) })
+
+            local ProgressTrack = Create("Frame", { BackgroundColor3 = Theme.SurfaceLight, Position = UDim2.new(0, 16, 2, -6), Size = UDim2.new(1, -32, 0, 3), Parent = Notif })
+            local ProgressFill = Create("Frame", { BackgroundColor3 = typeColor, Size = UDim2.new(1, 0,2, 0), Parent = ProgressTrack })
 
 		Create("UIPadding", { PaddingBottom = UDim.new(0, 16) }).Parent = Notif
 
