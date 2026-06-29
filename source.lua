@@ -59,7 +59,23 @@ local DefaultTheme = {
 	FontBold = Enum.Font.GothamBold,
 }
 
-
+----------------------------------------------------------------
+-- BẢNG PHỐI MÀU THEME (>= 10 lựa chọn) — dùng cho panel Settings
+----------------------------------------------------------------
+local ThemePresets = {
+	{ Name = "Garnet (mặc định)", Color = Color3.fromRGB(145, 60, 50) },
+	{ Name = "Cam",               Color = Color3.fromRGB(200, 110, 40) },
+	{ Name = "Hổ Phách",          Color = Color3.fromRGB(200, 150, 40) },
+	{ Name = "Vàng Chanh",        Color = Color3.fromRGB(170, 180, 50) },
+	{ Name = "Xanh Lá",           Color = Color3.fromRGB(70, 150, 80) },
+	{ Name = "Ngọc Lục Bảo",      Color = Color3.fromRGB(40, 150, 110) },
+	{ Name = "Lam Ngọc",          Color = Color3.fromRGB(40, 150, 150) },
+	{ Name = "Xanh Dương",        Color = Color3.fromRGB(50, 110, 190) },
+	{ Name = "Chàm",              Color = Color3.fromRGB(90, 90, 200) },
+	{ Name = "Tím",               Color = Color3.fromRGB(130, 70, 190) },
+	{ Name = "Hồng",              Color = Color3.fromRGB(190, 60, 140) },
+	{ Name = "Xám Bạc",           Color = Color3.fromRGB(110, 110, 120) },
+}
 
 
 local function Create(class, props, children)
@@ -69,17 +85,63 @@ local function Create(class, props, children)
 	return inst
 end
 
+----------------------------------------------------------------
+-- CORNER ĐA GÓC (bản hoạt động đúng)
+-- LƯU Ý KỸ THUẬT: UICorner của Roblox chỉ có DUY NHẤT property
+-- `CornerRadius`, áp dụng đều cho cả 4 góc — KHÔNG có TopLeftRadius/
+-- TopRightRadius/... (gán mấy property đó sẽ làm script lỗi ngay).
+-- Để giả lập bo lệch từng góc, mình lấy bán kính lớn nhất làm UICorner
+-- chung, rồi "vá vuông" lại các góc có bán kính nhỏ hơn bằng 1 ô vuông
+-- cùng màu nền — góc đó sẽ thành vuông hẳn (giới hạn kỹ thuật, không phải
+-- lỗi). Ô vá tự bám màu/độ trong suốt của frame cha theo thời gian thực.
+----------------------------------------------------------------
 local function Corner(radius, tl, tr, bl, br)
-    local c = Instance.new("UICorner")
+	radius = radius or 8
+	tl = tl or radius
+	tr = tr or radius
+	bl = bl or radius
+	br = br or radius
 
-    radius = radius or 0
+	local maxR = math.max(tl, tr, bl, br, 0)
+	local corner = Create("UICorner", { CornerRadius = UDim.new(0, maxR) })
 
-    c.TopLeftRadius = UDim.new(0, tl or radius)
-    c.TopRightRadius = UDim.new(0, tr or radius)
-    c.BottomLeftRadius = UDim.new(0, bl or radius)
-    c.BottomRightRadius = UDim.new(0, br or radius)
+	if tl == maxR and tr == maxR and bl == maxR and br == maxR then
+		return corner
+	end
 
-    return c
+	local patchSpecs = {
+		{ r = tl, anchor = Vector2.new(0, 0), pos = UDim2.new(0, 0, 0, 0) },
+		{ r = tr, anchor = Vector2.new(1, 0), pos = UDim2.new(1, 0, 0, 0) },
+		{ r = bl, anchor = Vector2.new(0, 1), pos = UDim2.new(0, 0, 1, 0) },
+		{ r = br, anchor = Vector2.new(1, 1), pos = UDim2.new(1, 0, 1, 0) },
+	}
+
+	corner.AncestryChanged:Connect(function(_, parent)
+		if not parent or not parent:IsA("GuiObject") then return end
+		for _, spec in ipairs(patchSpecs) do
+			if spec.r < maxR then
+				local patch = Create("Frame", {
+					Name = "CornerPatch",
+					BackgroundColor3 = parent.BackgroundColor3,
+					BackgroundTransparency = parent.BackgroundTransparency,
+					BorderSizePixel = 0,
+					AnchorPoint = spec.anchor,
+					Position = spec.pos,
+					Size = UDim2.new(0, maxR, 0, maxR),
+					ZIndex = 5,
+					Parent = parent,
+				})
+				parent:GetPropertyChangedSignal("BackgroundColor3"):Connect(function()
+					patch.BackgroundColor3 = parent.BackgroundColor3
+				end)
+				parent:GetPropertyChangedSignal("BackgroundTransparency"):Connect(function()
+					patch.BackgroundTransparency = parent.BackgroundTransparency
+				end)
+			end
+		end
+	end)
+
+	return corner
 end
 
 
@@ -243,17 +305,197 @@ function UILib:CreateWindow(config)
 
 	MakeDraggable(TopBar, Main)
 
-
+	-- TabList: chỉ bo góc dưới-trái (góc ngoài thật của Main), phần tab nằm trong TabsHolder
+	-- để dành khoảng trống cố định ở đáy cho nút Settings.
 	local TabList = Create("Frame", { Name = "TabList", BackgroundColor3 = Theme.Surface, Position = UDim2.new(0, 0, 0, 48), Size = UDim2.new(0, 130, 1, -48), Parent = Main }, {
 		Corner(12, 0, 0, 12, 0),
+	})
+
+	local TabsHolder = Create("Frame", { Name = "TabsHolder", BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, -50), Parent = TabList }, {
 		Create("UIListLayout", { Padding = UDim.new(0, 4), SortOrder = Enum.SortOrder.LayoutOrder }),
 		Create("UIPadding", { PaddingTop = UDim.new(0, 10), PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 8) }),
 	})
 
+	Create("Frame", { -- đường kẻ phân tách phía trên nút Settings
+		Name = "SettingsDivider",
+		BackgroundColor3 = Theme.Border,
+		AnchorPoint = Vector2.new(0, 1),
+		Position = UDim2.new(0, 8, 1, -50),
+		Size = UDim2.new(1, -16, 0, 1),
+		BorderSizePixel = 0,
+		Parent = TabList,
+	})
+
 	local Container = Create("Frame", { Name = "Container", BackgroundTransparency = 1, Position = UDim2.new(0, 130, 0, 48), Size = UDim2.new(1, -130, 1, -48), Parent = Main })
 
-	local Window = { ScreenGui = screenGui, Main = Main, Tabs = {}, Connections = {}, _firstTab = nil }
+	local Window = { ScreenGui = screenGui, Main = Main, Tabs = {}, Connections = {}, _firstTab = nil, _allPages = {}, _accentListeners = {}, _activeTabButton = nil }
 	ActiveWindow = Window
+
+	function Window:SetAccent(newColor)
+		Theme.Accent = newColor
+		if Window._activeTabButton then
+			Window._activeTabButton.BackgroundColor3 = newColor
+		end
+		for _, fn in ipairs(Window._accentListeners) do
+			fn(newColor)
+		end
+	end
+
+	----------------------------------------------------------------
+	-- NÚT "Settings" CỐ ĐỊNH Ở ĐÁY TABLIST
+	-- Tên và icon hard-code, KHÔNG đi qua hệ thống Icon tuỳ biến (Icon/opts)
+	-- của các component khác — người dùng không chỉnh được tên/icon nút này.
+	----------------------------------------------------------------
+	local SettingsBtn = Create("TextButton", {
+		Name = "SettingsBtn",
+		BackgroundColor3 = Theme.SurfaceLight,
+		AnchorPoint = Vector2.new(0, 1),
+		Position = UDim2.new(0, 8, 1, -8),
+		Size = UDim2.new(1, -16, 0, 34),
+		Text = "",
+		AutoButtonColor = false,
+		Parent = TabList,
+	}, { Corner(8) })
+
+	Create("TextLabel", {
+		BackgroundTransparency = 1,
+		Position = UDim2.new(0, 10, 0, 0),
+		Size = UDim2.new(0, 18, 1, 0),
+		Font = Theme.FontBold,
+		Text = "⚙",
+		TextColor3 = Theme.SubText,
+		TextSize = 15,
+		Parent = SettingsBtn,
+	})
+	local SettingsLabel = Create("TextLabel", {
+		BackgroundTransparency = 1,
+		Position = UDim2.new(0, 30, 0, 0),
+		Size = UDim2.new(1, -38, 1, 0),
+		Font = Theme.Font,
+		Text = "Settings",
+		TextColor3 = Theme.SubText,
+		TextSize = 13,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		Parent = SettingsBtn,
+	})
+
+	local SettingsPage = Create("ScrollingFrame", {
+		Name = "SettingsPage",
+		BackgroundTransparency = 1,
+		Size = UDim2.new(1, 0, 1, 0),
+		CanvasSize = UDim2.new(0, 0, 0, 0),
+		AutomaticCanvasSize = Enum.AutomaticSize.Y,
+		ScrollBarThickness = 0,
+		ScrollBarImageColor3 = Theme.Accent,
+		Visible = false,
+		Parent = Container,
+	}, {
+		Create("UIPadding", { PaddingTop = UDim.new(0, 12), PaddingLeft = UDim.new(0, 14), PaddingRight = UDim.new(0, 14), PaddingBottom = UDim.new(0, 12) }),
+	})
+	table.insert(Window._allPages, SettingsPage)
+	table.insert(Window._accentListeners, function(c) SettingsPage.ScrollBarImageColor3 = c end)
+
+	Create("TextLabel", {
+		Name = "SectionTitle",
+		BackgroundTransparency = 1,
+		Size = UDim2.new(1, 0, 0, 20),
+		Font = Theme.FontBold,
+		Text = "MÀU THEME",
+		TextColor3 = Theme.SubText,
+		TextSize = 12,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		Parent = SettingsPage,
+	})
+
+	local SwatchGrid = Create("Frame", {
+		Name = "SwatchGrid",
+		BackgroundTransparency = 1,
+		Position = UDim2.new(0, 0, 0, 26),
+		Size = UDim2.new(1, 0, 0, 0),
+		AutomaticSize = Enum.AutomaticSize.Y,
+		Parent = SettingsPage,
+	}, {
+		Create("UIGridLayout", {
+			CellSize = UDim2.new(0, 76, 0, 86),
+			CellPadding = UDim2.new(0, 10, 0, 10),
+			SortOrder = Enum.SortOrder.LayoutOrder,
+		}),
+	})
+
+	local swatchRefs = {}
+	local function refreshSwatchSelection()
+		for _, ref in ipairs(swatchRefs) do
+			local isActive = ref.color == Theme.Accent
+			ref.check.Visible = isActive
+			ref.stroke.Transparency = isActive and 0 or 1
+		end
+	end
+
+	for _, preset in ipairs(ThemePresets) do
+		local Cell = Create("Frame", { BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), Parent = SwatchGrid })
+
+		local Swatch = Create("TextButton", {
+			BackgroundColor3 = preset.Color,
+			AnchorPoint = Vector2.new(0.5, 0),
+			Position = UDim2.new(0.5, 0, 0, 0),
+			Size = UDim2.new(0, 56, 0, 56),
+			Text = "",
+			AutoButtonColor = false,
+			Parent = Cell,
+		}, { Corner(10) })
+
+		local SwatchStroke = Create("UIStroke", {
+			Color = Color3.fromRGB(255, 255, 255),
+			Thickness = 2,
+			Transparency = 1,
+			Parent = Swatch,
+		})
+
+		local Check = Create("TextLabel", {
+			BackgroundTransparency = 1,
+			Size = UDim2.new(1, 0, 1, 0),
+			Font = Theme.FontBold,
+			Text = "✓",
+			TextColor3 = Color3.fromRGB(255, 255, 255),
+			TextSize = 22,
+			Visible = false,
+			Parent = Swatch,
+		})
+
+		Create("TextLabel", {
+			BackgroundTransparency = 1,
+			Position = UDim2.new(0, 0, 0, 60),
+			Size = UDim2.new(1, 0, 0, 16),
+			Font = Theme.Font,
+			Text = preset.Name,
+			TextColor3 = Theme.SubText,
+			TextSize = 11,
+			TextXAlignment = Enum.TextXAlignment.Center,
+			Parent = Cell,
+		})
+
+		table.insert(swatchRefs, { color = preset.Color, check = Check, stroke = SwatchStroke })
+
+		Swatch.MouseButton1Click:Connect(function()
+			Window:SetAccent(preset.Color)
+			refreshSwatchSelection()
+		end)
+	end
+
+	refreshSwatchSelection()
+
+	SettingsBtn.MouseButton1Click:Connect(function()
+		for _, p in ipairs(Window._allPages) do p.Visible = false end
+		for _, t in ipairs(Window.Tabs) do
+			Tween(t.Button, { BackgroundColor3 = Theme.SurfaceLight }, 0.2)
+			if t.Icon then Tween(t.Icon, { ImageColor3 = Theme.SubText }, 0.2) end
+			Tween(t.Text, { TextColor3 = Theme.SubText }, 0.2)
+		end
+		SettingsPage.Visible = true
+		Tween(SettingsBtn, { BackgroundColor3 = Theme.Accent }, 0.2)
+		Tween(SettingsLabel, { TextColor3 = Color3.fromRGB(255,255,255) }, 0.2)
+		Window._activeTabButton = SettingsBtn
+	end)
 
 	local ToggleButton = Create("ImageButton", { Name = "ToggleButton",Transparency = 1, BackgroundColor3 = Theme.Accent, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(0, 45, 0.5, 0), Size = UDim2.new(0, 0, 0, 0), Visible = false, AutoButtonColor = false, Parent = screenGui }, {Corner(50)})
 	local Img = Create("ImageLabel", { BackgroundTransparency = 1, AnchorPoint = Vector2.new(.5,.5), Position = UDim2.new(0.5, -12, 0.5, -12), Size = UDim2.new(0, 24, 0, 24), Image = "rbxassetid://7488932274" , ImageColor3 = Color3.fromRGB(255, 255, 255), Parent = ToggleButton} , {Corner(50)})
@@ -337,7 +579,7 @@ function UILib:CreateWindow(config)
 	function Window:CreateTab(tabName, icon)
 		local iconData = ResolveIcon(icon)
 
-		local TabButton = Create("TextButton", { Name = tabName .. "Btn", BackgroundColor3 = Theme.SurfaceLight, Size = UDim2.new(1, 0, 0, 34), Text = "", AutoButtonColor = false, Parent = TabList }, {Corner(8), Create("UIPadding", { PaddingLeft = UDim.new(0, 10) }) })
+		local TabButton = Create("TextButton", { Name = tabName .. "Btn", BackgroundColor3 = Theme.SurfaceLight, Size = UDim2.new(1, 0, 0, 34), Text = "", AutoButtonColor = false, Parent = TabsHolder }, {Corner(8), Create("UIPadding", { PaddingLeft = UDim.new(0, 10) }) })
 
 		local TabIcon = nil
 		if iconData then
@@ -355,18 +597,23 @@ function UILib:CreateWindow(config)
 			Create("UIListLayout", { Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder }),
 			Create("UIPadding", { PaddingTop = UDim.new(0, 12), PaddingLeft = UDim.new(0, 14), PaddingRight = UDim.new(0, 14), PaddingBottom = UDim.new(0, 12) }),
 		})
+		table.insert(Window._allPages, TabPage)
+		table.insert(Window._accentListeners, function(c) TabPage.ScrollBarImageColor3 = c end)
 
 		local function selectTab()
+			for _, p in ipairs(Window._allPages) do p.Visible = false end
 			for _, t in pairs(Window.Tabs) do
-				t.Page.Visible = false
 				Tween(t.Button, { BackgroundColor3 = Theme.SurfaceLight }, 0.2)
 				if t.Icon then Tween(t.Icon, { ImageColor3 = Theme.SubText }, 0.2) end
 				Tween(t.Text, { TextColor3 = Theme.SubText }, 0.2)
 			end
+			Tween(SettingsBtn, { BackgroundColor3 = Theme.SurfaceLight }, 0.2)
+			Tween(SettingsLabel, { TextColor3 = Theme.SubText }, 0.2)
 			TabPage.Visible = true
 			Tween(TabButton, { BackgroundColor3 = Theme.Accent }, 0.2)
 			if TabIcon then Tween(TabIcon, { ImageColor3 = Color3.fromRGB(255,255,255) }, 0.2) end
 			Tween(TabText, { TextColor3 = Color3.fromRGB(255,255,255) }, 0.2)
+			Window._activeTabButton = TabButton
 		end
 
 		TabButton.MouseButton1Click:Connect(selectTab)
@@ -410,6 +657,11 @@ function UILib:CreateWindow(config)
 			Create("TextLabel", { BackgroundTransparency = 1, Position = UDim2.new(0, textOffset, 0, 0), Size = UDim2.new(1, -textOffset - 60, 1, 0), Font = Theme.Font, Text = opts.Name or "Toggle", TextColor3 = Theme.Text, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, Parent = Holder })
 			local Switch = Create("TextButton", { BackgroundColor3 = state and Theme.Accent or Theme.SurfaceLight, Position = UDim2.new(1, -50, 0.5, -10), Size = UDim2.new(0, 40, 0, 20), Text = "", AutoButtonColor = false, Parent = Holder }, { Corner(10) })
 			local Dot = Create("Frame", { BackgroundColor3 = Color3.fromRGB(255, 255, 255), Position = state and UDim2.new(1, -18, 0.5, -7) or UDim2.new(0, 3, 0.5, -7), Size = UDim2.new(0, 14, 0, 14), Parent = Switch }, { Corner(7) })
+
+			table.insert(Window._accentListeners, function(c)
+				if state then Switch.BackgroundColor3 = c end
+			end)
+
 			Switch.MouseButton1Click:Connect(function()
 				state = not state
 				Tween(Switch, { BackgroundColor3 = state and Theme.Accent or Theme.SurfaceLight }, 0.2, Enum.EasingStyle.Quad)
@@ -431,6 +683,12 @@ function UILib:CreateWindow(config)
 			local function ratio(v) return math.clamp((v - min) / (max - min), 0, 1) end
 			local Fill = Create("Frame", { BackgroundColor3 = Theme.Accent, Size = UDim2.new(ratio(value), 0, 1, 0), Parent = Track }, { Corner(4) })
 			local Knob = Create("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(ratio(value), 0, 0.5, 0), Size = UDim2.new(0, 16, 0, 16), BackgroundColor3 = Color3.fromRGB(255, 255, 255), Parent = Track }, { Corner(8) })
+
+			table.insert(Window._accentListeners, function(c)
+				Fill.BackgroundColor3 = c
+				ValueLabel.TextColor3 = c
+			end)
+
 			local dragging = false
 			local function updateFromX(xPos)
 				local relative = math.clamp((xPos - Track.AbsolutePosition.X) / Track.AbsoluteSize.X, 0, 1)
@@ -553,8 +811,8 @@ function UILib:CreateWindow(config)
 		Create("TextLabel", { BackgroundTransparency = 1, Position = UDim2.new(0, 16, 0, 28), Size = UDim2.new(1, -28, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, Font = Theme.Font, Text = opts.Content or "", TextColor3 = Theme.SubText, TextSize = 12, TextWrapped = true, TextXAlignment = Enum.TextXAlignment.Left, Parent = Notif })
 
 
-		local ProgressTrack = Create("Frame", { BackgroundColor3 = Theme.SurfaceLight, Position = UDim2.new(0, 16, 2, -6), Size = UDim2.new(1, -32, 0, 3), Parent = Notif })
-		local ProgressFill = Create("Frame", { BackgroundColor3 = typeColor, Size = UDim2.new(1, 0,2, 0), Parent = ProgressTrack })
+		local ProgressTrack = Create("Frame", { BackgroundColor3 = Theme.SurfaceLight, Position = UDim2.new(0, 16, 1, -6), Size = UDim2.new(1, -32, 0, 3), Parent = Notif })
+		local ProgressFill = Create("Frame", { BackgroundColor3 = typeColor, Size = UDim2.new(1, 0, 1, 0), Parent = ProgressTrack })
 
 		Create("UIPadding", { PaddingBottom = UDim.new(0, 16) }).Parent = Notif
 
@@ -562,7 +820,7 @@ function UILib:CreateWindow(config)
 		Tween(Scale, { Scale = 1 }, 0.35, Enum.EasingStyle.Back)
 
 		task.delay(0.1, function()
-			Tween(ProgressFill, { Size = UDim2.new(0, 0, 2, 0) }, duration, Enum.EasingStyle.Linear)
+			Tween(ProgressFill, { Size = UDim2.new(0, 0, 1, 0) }, duration, Enum.EasingStyle.Linear)
 		end)
 
 		task.delay(duration, function()
