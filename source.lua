@@ -307,7 +307,7 @@ function UILib:CreateWindow(config)
 
 	-- TabList: chỉ bo góc dưới-trái (góc ngoài thật của Main), phần tab nằm trong TabsHolder
 	-- để dành khoảng trống cố định ở đáy cho nút Settings.
-	local TabList = Create("Frame", { Name = "TabList", BackgroundColor3 = Theme.Surface, Position = UDim2.new(0, 0, 0, 48), Size = UDim2.new(0, 130, 1, -48), Parent = Main }, {
+	local TabList = Create("Frame", { Name = "TabList", BackgroundColor3 = Theme.Accent, Position = UDim2.new(0, 0, 0, 48), Size = UDim2.new(0, 130, 1, -48), Parent = Main }, {
 		Corner(12, 0, 0, 12, 0),
 	})
 
