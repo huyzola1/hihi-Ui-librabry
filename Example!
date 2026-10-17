@@ -1,7 +1,6 @@
 
-
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local UILib = require(ReplicatedStorage:WaitForChild("UILib"))
+local UILib = loadstring(game:HttpGet("https://raw.githubusercontent.com/huyzola1/hihi-Ui-librabry/refs/heads/main/source.lua"))()
 
 -- Create window
 local Window = UILib:CreateWindow({
